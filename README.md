@@ -21,6 +21,9 @@ Navigate to the project directory you're interested in.
 Explore the project's code to understand its structure and functionality.
 Experiment with the code, customize it, or extend it to create your own canvas masterpieces.
 
+## Note
+The project files are structured such that as you move down it increase in difficulty and its based of one master canvas code base and the other canvas projects are different variants of it.  
+
 ## Contribution
 If you're interested in contributing to this repository, whether it's fixing bugs, adding new features, or improving documentation, feel free to open an issue or submit a pull request. Contributions are highly appreciated!
 
