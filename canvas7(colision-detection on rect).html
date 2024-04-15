@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+
+
+
+        body {
+            height: 100vh;
+        }
+
+        .canvas {
+            display: flex;
+        }
+
+        .space {
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <canvas class="canvas"></canvas>
+    </div>
+    <!-- <div class="space"></div>
+    <div class="space"></div>
+    <div class="space"></div> -->
+
+    <script>
+        let canvas = document.querySelector('canvas');
+
+
+        let c = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+
+        let mouse = {
+            x: undefined, y: undefined
+        }
+
+        window.addEventListener("mousemove", function (event) {
+
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
+            // console.log(mouse)
+        })
+
+        window.addEventListener("resize", function () {
+
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+
+            init();
+        })
+
+        addEventListener("click", function () {
+            init()
+        })
+
+        // some defined stuffs
+
+        let gravity = 1
+        let friction = 0.89
+
+        let colors = ['#5d03b1', '#004900', '#002e74',
+            '#eb7d00', '#c400eb', '#2b00eb', '#00eb9d', '#eb0000',
+            '#ffaa33', "white", "lime", "purple", "pink"]
+
+
+        function randomIntFromRange(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        function randomColor(color) {
+            return colors[Math.floor(Math.random() * colors.length)]
+        }
+
+
+        function Rectangle(x, y, w, h, colors) {
+            this.x = x
+            this.y = y
+            this.w = w
+            this.h = h
+            this.colors = colors
+
+
+
+            this.update = function () {
+                // collision for rectangle
+
+                this.draw();
+
+
+            }
+
+            this.draw = function () {
+                c.beginPath()
+                // c.fillStyle = "black"
+                // c.fillRect(0, 0, canvas.width, canvas.height)
+                c.rect(this.x, this.y, this.w, this.h)
+                c.fillStyle = this.colors
+                c.fill()
+                // c.fillRect = "red"
+                c.closePath()
+
+
+            }
+        }
+
+        let rect1
+        let rect2
+        function init() {
+
+            // c.fillStyle = "red"
+            rect1 = new Rectangle(mouse.x, mouse.y, 100, 100, "red")
+
+
+            // c.fillStyle = "blue"
+            rect2 = new Rectangle(canvas.width / 2 - 50, canvas.height / 2 - 50, 100, 100, "blue")
+        }
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            c.clearRect(0, 0, innerWidth, innerHeight);
+
+            rect1.update()
+            rect1.x = mouse.x
+            rect1.y = mouse.y
+            rect2.update()
+
+            if (mouse.x + 100 >= canvas.width / 2 - 50 &&
+                mouse.x <= canvas.width / 2 - 50 + 100 &&
+                mouse.y + 100 >= canvas.height / 2 - 50 &&
+                mouse.y <= canvas.height / 2 - 50 + 100) {
+                console.log("colliding")
+                rect2.colors = "black"
+                
+            }else{
+                rect2.colors = "blue"
+            }
+
+        }
+
+        init()
+        animate();
+    </script>
+</body>
+
+</html>
