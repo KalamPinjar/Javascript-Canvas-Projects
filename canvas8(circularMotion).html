@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+
+
+
+        body {
+            height: 100vh;
+        }
+
+        .canvas {
+            display: flex;
+        }
+
+        .space {
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <canvas class="canvas"></canvas>
+    </div>
+    <!-- <div class="space"></div>
+    <div class="space"></div>
+    <div class="space"></div> -->
+
+    <script>
+        let canvas = document.querySelector('canvas');
+
+
+        let c = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+
+        let mouse = {
+            x: undefined, y: undefined
+        }
+
+        window.addEventListener("mousemove", function (event) {
+
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
+            // console.log(mouse)
+        })
+
+        window.addEventListener("resize", function () {
+
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+
+            init();
+        })
+
+        addEventListener("click", function () {
+            init()
+        })
+
+        // some defined stuffs
+
+        let gravity = 1
+        let friction = 0.89
+
+        // let colors = ['#5d03b1', '#004900', '#002e74',
+        //     '#eb7d00', '#c400eb', '#2b00eb', '#00eb9d', '#eb0000',
+        //     '#ffaa33', "white", "lime", "purple", "pink"]
+
+        let colorsCircle = [
+            "#00bdff",
+            "#4d39ce",
+            "#088eff",
+        ]
+
+        function randomIntFromRange(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        function randomColor(color) {
+            return colorsCircle[Math.floor(Math.random() * colorsCircle.length)]
+        }
+
+       
+
+        function Particle(x, y, radius, colors) {
+
+            this.x = x;
+            this.y = y;
+            // this.dx = dx;
+            // this.dy = dy
+            this.radius = radius
+            this.colors = colors
+            this.radians = Math.random() * Math.PI * 2
+            this.velocity = 0.01
+            this.distanceFromCenter = randomIntFromRange(50, 200)
+            this.lastMouse = { x: x, y: y }
+
+
+            this.update = function () {
+
+                // previous cordinates stored 
+                const lastPoint = {
+                    x: this.x, y: this.y
+                }
+
+
+                
+
+                // drag effect
+                this.lastMouse.x += (mouse.x - this.lastMouse.x) * 0.05
+                this.lastMouse.y += (mouse.y - this.lastMouse.y) * 0.05
+                console.log()
+                // performing oscilation motion
+
+                // this.radians += this.velocity - this.lastMouse.x
+                this.radians += this.velocity
+
+                this.x = this.lastMouse.x + Math.cos(this.radians) *
+                    this.distanceFromCenter
+
+                this.y = this.lastMouse.y + Math.sin(this.radians) *
+                    this.distanceFromCenter
+
+                this.draw(lastPoint)
+
+            }
+            this.draw = lastPoint => {
+                c.beginPath()
+                // c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+                // c.fillStyle = this.colors
+                // c.fill()
+                // c.stroke()
+                c.strokeStyle = this.colors
+                c.lineWidth = this.radius
+                // previous cordinates
+                c.moveTo(lastPoint.x,
+                    lastPoint.y)
+
+                // next frame cordinates 
+                c.lineTo(this.x, this.y)
+                c.stroke()
+                c.closePath()
+
+            }
+
+
+        }
+
+
+        let particleArray;
+        function init() {
+            particleArray = []
+
+            for (let i = 0; i < 500; i++) {
+
+                const radius = randomIntFromRange(2, 3)
+                // const radius = (Math.random() * 2) + 1
+                particleArray.push(new Particle(canvas.width / 2,
+                    canvas.height / 2, radius, randomColor(colorsCircle)))
+
+            }
+
+        }
+
+
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+
+            // c.clearRect(0, 0, innerWidth, innerHeight);
+
+            c.fillStyle = 'rgba(255,255,255,0.05)'
+            c.fillRect(0, 0, innerWidth, innerHeight);
+
+            particleArray.forEach(particle => {
+                particle.update();
+            })
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+
+</html>
