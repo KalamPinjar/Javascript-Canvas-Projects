@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            height: 100vh;
+        }
+
+        canvas {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="canvas1"></canvas>
+
+
+
+    <script>
+
+        let canvas = document.querySelector("canvas")
+
+        let ctx = canvas.getContext("2d")
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+
+
+        window.addEventListener("resize", function () {
+
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+        })
+
+
+        const mouse = {
+            x: canvas.width / 2, y: canvas.height / 2
+        }
+
+        const gravity = 0.03
+        const friction = 0.99
+
+
+
+        class Particle {
+            constructor(x, y, radius, colors, velocity) {
+
+                this.x = x
+                this.y = y
+                this.radius = radius
+                this.colors = colors
+
+                this.velocity = {
+                    x: velocity.x, y: velocity.y
+                }
+
+                this.alpha = 1
+            }
+
+            draw() {
+                ctx.save()
+                ctx.globalAlpha = this.alpha
+                ctx.beginPath()
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+                ctx.fillStyle = this.colors
+                ctx.fill()
+                ctx.closePath()
+                ctx.restore()
+            }
+            update() {
+                this.draw()
+
+                this.velocity.x *= friction
+                this.velocity.y *= friction
+                this.velocity.y += gravity
+                this.x += this.velocity.x
+                this.y += this.velocity.y
+                this.alpha -= 0.003
+
+            }
+
+
+        }
+
+        addEventListener('click', (event) => {
+
+            mouse.x = event.clientX
+            mouse.y = event.clientY
+            const particleCount = 500
+            const power = 12
+
+            const angleIncrement = Math.PI * 2 / particleCount
+
+            for (let i = 0; i < particleCount; i++) {
+
+                particleArray.push(
+                    new Particle(mouse.x, mouse.y, 2,
+                        `hsl(${Math.random() * 360} , 80% , 50%)`,
+                        {
+                            x: Math.cos(angleIncrement * i) * Math.random() * power,
+                            y: Math.sin(angleIncrement * i) * Math.random() * power
+                        }
+                    )
+                )
+
+            }
+
+        })
+
+
+        let particleArray
+        particleArray = []
+
+
+
+
+
+        function animate() {
+            requestAnimationFrame(animate)
+            // ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.fillStyle = `rgba(0,0,0,0.05)`
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+            particleArray.forEach((particle, i) => {
+
+
+                if (particle.alpha > 0) {
+                    particle.update()
+                }
+                else {
+                    particleArray.splice(i, 1)
+                }
+
+            })
+        }
+        animate();
+
+
+    </script>
+</body>
+
+</html>
