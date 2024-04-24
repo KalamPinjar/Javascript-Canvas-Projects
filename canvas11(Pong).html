@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+        }
+
+        canvas {
+
+            display: flex;
+        }
+
+        .users {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .scores {
+            position: absolute;
+            inset: 0;
+            left: 40%;
+            transform: translateX(-50%);
+            background: transparent;
+            height: 30px;
+            width: 90px;
+            color: white;
+        }
+
+        .scoresY {
+            margin-left: 30%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="users">
+
+        <!-- <div class="scores scoresX">ScoresX: 00</div>
+        <div class="scores scoresY">ScoresY: 00</div> -->
+
+    </div>
+
+    <canvas></canvas>
+
+    <script>
+        const canvas = document.querySelector('canvas')
+        let scoresX = document.querySelector('.scoresX')
+        let scoresY = document.querySelector('.scoresY')
+
+        const c = canvas.getContext('2d')
+        canvas.width = innerWidth
+        canvas.height = innerHeight
+
+        let PlayerXScores = 0
+        let PlayerYScores = 0
+
+        addEventListener('resize', function () {
+
+            canvas.width = innerWidth
+            canvas.height = innerHeight
+        })
+
+        class Paddle {
+            constructor({ position }) {
+                this.position = position
+                this.velocity = {
+                    x: 0,
+                    y: 0
+                }
+                this.width = 10
+                this.height = 100
+            }
+            draw() {
+                c.fillStyle = 'White'
+                c.fillRect(this.position.x, this.position.y,
+                    this.width, this.height)
+
+
+            }
+
+            update() {
+                this.draw()
+
+                if (this.position.y + this.velocity.y > 0
+                    &&
+                    this.position.y + this.height +
+                    this.velocity.y < canvas.height) {
+
+                    this.position.y += this.velocity.y
+                }
+            }
+        }
+
+        class Ball {
+            constructor({ position }) {
+                this.position = position
+                const speed = 3
+                const direction = {
+                    x: Math.random() - 0.5 >= 0 ? -speed : speed,
+                    y: Math.random() - 0.5 >= 0 ? -speed : speed
+                }
+                this.velocity = {
+                    x: direction.x,
+                    y: direction.y
+                }
+                this.width = 10
+                this.height = 10
+            }
+
+            draw() {
+
+                c.fillStyle = 'red'
+                c.fillRect(this.position.x, this.position.y,
+                    this.width, this.height)
+            }
+            update() {
+
+                this.draw()
+
+                const rightSide = this.position.x + this.width + this.velocity.x
+                const leftSide = this.position.x + this.velocity.x
+                const bottomSide = this.position.y + this.height
+                const topSide = this.position.y
+
+
+                // paddle 1 collision
+                if (
+                    (leftSide <= paddle1.position.x + paddle1.width &&
+                        bottomSide >= paddle1.position.y &&
+                        topSide <= paddle1.position.y + paddle1.height)
+                    || leftSide <= 0) {
+                    this.velocity.x = -this.velocity.x
+                }
+
+                // paddle 2 collision
+                if (
+                    (rightSide >= paddle2.position.x &&
+                        bottomSide >= paddle2.position.y &&
+                        topSide <= paddle2.position.y + paddle2.height)
+                    || leftSide <= 0) {
+                    this.velocity.x = -this.velocity.x
+                }
+
+                // reverse Y direction
+                if (this.position.y + this.height + this.velocity.y
+                    >=
+                    canvas.height || this.position.y + this.velocity.y
+                    <= 0) {
+                    this.velocity.y = -this.velocity.y
+                }
+
+                this.position.x += this.velocity.x
+                this.position.y += this.velocity.y
+
+                // points system for players
+                if (rightSide >= canvas.width) {
+                    // scoresX.textContent = `ScoresX: ${PlayerXScores = +1}`
+                    // c.clearRect(0, 0, canvas.width, canvas.height)
+                    // localStorage.setItem('scoresX', PlayerXScores = +1)
+                    c.font = "50px Arial"
+                    c.fillText("PlayerX WON!!", canvas.width - 400, canvas.height / 2)
+                    c.font = "10px Arial"
+                    c.fillText("Press Enter to Restart", canvas.width - 400,
+                        (canvas.height / 2) + 20)
+                    // console.log("right out")
+                }
+                if (rightSide <= 0) {
+                    // scoresY.textContent = `ScoresY: ${PlayerYScores = +1}`
+                    // c.clearRect(0, 0, canvas.width, canvas.height)
+                    // localStorage.setItem('scoresY', PlayerYScores = +1)
+
+
+                    c.font = "50px Arial"
+                    c.fillText("PlayerY WON!!", canvas.width - 400, canvas.height / 2)
+                    c.font = "10px Arial"
+                    c.fillText("Press Enter to Restart", canvas.width - 400,
+                        (canvas.height / 2) + 20)
+                    // console.log("left out")
+                }
+
+
+            }
+        }
+
+
+
+        const paddle1 = new Paddle({
+            position: {
+                x: 10,
+                y: 100,
+            }
+
+        })
+        const paddle2 = new Paddle({
+            position: {
+                x: canvas.width - 10 * 2,
+                y: 100,
+            }
+
+        })
+        const ball = new Ball({
+            position: {
+                x: canvas.width / 2,
+                y: canvas.height / 2
+            }
+        })
+
+        function init() {
+
+        }
+
+        function animate() {
+            requestAnimationFrame(animate)
+            c.fillStyle = 'black'
+            c.fillRect(0, 0, canvas.width, canvas.height)
+
+
+            paddle1.update()
+            paddle2.update()
+            ball.update()
+
+        }
+        animate()
+
+        addEventListener('keydown', event => {
+
+            const speed = 6
+
+            switch (event.key) {
+                case 'w':
+                    // go up
+                    paddle1.velocity.y = -speed
+                    break;
+
+                case 's':
+                    // go down
+                    paddle1.velocity.y = speed
+                    break;
+
+                case 'ArrowUp':
+                    // go up
+                    paddle2.velocity.y = -speed
+                    break;
+
+                case 'ArrowDown':
+                    // go down
+                    paddle2.velocity.y = speed
+                    break;
+
+            }
+        })
+
+
+        addEventListener('keydown', event => {
+
+            if (event.code == "Enter") {
+                location.reload()
+            }
+        })
+
+    </script>
+</body>
+
+</html>
